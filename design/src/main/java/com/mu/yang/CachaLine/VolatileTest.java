@@ -1,19 +1,27 @@
 package com.mu.yang.CachaLine;
 
+import sun.misc.Contended;
+
 /**
  * Created by xuanda007 on 2016/8/29.
  */
 public class VolatileTest {
-
-  //  @Contended
+    /**
+     * 1, only work int jdk 1.8 , and you need the vm option -XX:-RestrictContended when you run the application.
+     *
+     * 2, comment this annotation to compare the executing time.
+     *
+     *
+     */
+    @Contended
     class VolatileLong{
         volatile long msg = 1l;
     }
 
-    class Test implements Runnable{
+    class VolatileRunnable implements Runnable{
         private int index = 0;
         private int op_num = 0;
-        public Test(int index, int op_num){
+        public VolatileRunnable(int index, int op_num){
             this.index = index;
             this.op_num = op_num;
         }
@@ -38,7 +46,7 @@ public class VolatileTest {
         Thread[] tt = new Thread[count];
 
         for(int i = 0; i < count; i++){
-            tt[i] =  new Thread(new Test(i, op_num));
+            tt[i] =  new Thread(new VolatileRunnable(i, op_num));
             tt[i].start();
         }
 

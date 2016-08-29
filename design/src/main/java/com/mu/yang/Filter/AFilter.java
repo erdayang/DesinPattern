@@ -2,7 +2,6 @@ package com.mu.yang.Filter;
 
 public class AFilter implements Filter{
 
-	@Override
 	public void doFilter(Context context, FilterChain filterChain) {
 		String name = (String)context.get("yang");
 		

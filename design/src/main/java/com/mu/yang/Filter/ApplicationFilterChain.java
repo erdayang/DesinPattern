@@ -8,14 +8,13 @@ public class ApplicationFilterChain implements FilterChain{
 	private List<Filter> filters = new ArrayList<Filter>();
 	
 	private int cur = -1;
-	@Override
+
 	public FilterChain addFilter(Filter filter) {
 		filters.add(filter);
 		return this;
 		
 	}
 
-	@Override
 	public void doFilter(Context context) {
 		cur = cur + 1;
 		System.out.println(context.get("yang"));
@@ -29,7 +28,6 @@ public class ApplicationFilterChain implements FilterChain{
 		
 	}
 
-	@Override
 	public Context context() {
 		// TODO Auto-generated method stub
 		return null;
