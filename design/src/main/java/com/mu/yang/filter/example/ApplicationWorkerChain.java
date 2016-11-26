@@ -1,20 +1,20 @@
 package com.mu.yang.filter.example;
 
 import com.mu.yang.filter.Context;
-import com.mu.yang.filter.Filter;
-import com.mu.yang.filter.FilterChain;
+import com.mu.yang.filter.Worker;
+import com.mu.yang.filter.WorkerChain;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ApplicationFilterChain implements FilterChain {
+public class ApplicationWorkerChain implements WorkerChain {
 
-	private List<Filter> filters = new ArrayList<Filter>();
+	private List<Worker> workers = new ArrayList<Worker>();
 	
 	private int cur = -1;
 
-	public FilterChain addFilter(Filter filter) {
-		filters.add(filter);
+	public WorkerChain addFilter(Worker worker) {
+		workers.add(worker);
 		return this;
 		
 	}
@@ -22,11 +22,11 @@ public class ApplicationFilterChain implements FilterChain {
 	public void doFilter(Context context) {
 		cur = cur + 1;
 		System.out.println(context.get("yang"));
-		if(cur >= filters.size()){
+		if(cur >= workers.size()){
 			return;
 		}
 		
-		filters.get(cur).filter(context, this);
+		workers.get(cur).work(context, this);
 		
 		//System.out.println(context.get("yang"));
 		
