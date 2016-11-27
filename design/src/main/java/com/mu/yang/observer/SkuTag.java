@@ -1,16 +1,19 @@
 package com.mu.yang.observer;
 
+import com.alibaba.fastjson.JSON;
+
 import java.util.*;
 
 /**
  * SkuTag 与 RecallSource 形成简单的观察者模式
  *
- * todo 增加 toString
  * Created by xuanda007 on 2016/11/26.
  */
 public class SkuTag {
     private final long sku;
-    private Map<RecallSource.SourceType, RecallSource> recallSourceMap = new HashMap<RecallSource.SourceType, RecallSource>();
+    private transient Map<RecallSource.SourceType, RecallSource> recallSourceMap = new HashMap<RecallSource.SourceType, RecallSource>();
+
+    private Set<RecallSource.SourceType> sources = recallSourceMap.keySet();
     public SkuTag(long sku){
         this.sku = sku;
     }
@@ -44,6 +47,10 @@ public class SkuTag {
             recallSourceMap.remove(iterator.next());
             iterator.remove();
         }
+    }
+
+    public String toString(){
+        return JSON.toJSONString(this);
     }
 
 

@@ -13,7 +13,7 @@ public class RecallResult {
 
     private Map<RecallSource.SourceType, RecallSource> recallSourceMap = new HashMap<RecallSource.SourceType, RecallSource>();
 
-    private static RecallResult recallResult;
+    private transient static RecallResult recallResult;
     private RecallResult(){}
     public static RecallResult getInstance(){
         synchronized (RecallResult.class){

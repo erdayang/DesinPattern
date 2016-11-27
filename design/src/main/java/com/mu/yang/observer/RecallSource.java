@@ -12,7 +12,7 @@ public class RecallSource {
 
     public final SourceType type ;
     private Map<Long, SkuTag> skuTagMap = new HashMap<Long, SkuTag>();
-    private RecallResult recallResult = null;
+    private transient RecallResult recallResult = null;
 
     public RecallSource(SourceType type){
         this.type = type;
