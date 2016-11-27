@@ -5,12 +5,10 @@ import com.mu.yang.filter.Context;
 
 public class AWorker extends AbstractWorker {
 
-	public void doFilter(Context context) {
-		String name = (String)context.get("yang");
-		
+	public void doWork(Context context) {
+		String name = (String)context.get(Const.KEY);
 		name += "xian";
-		
-		context.addParam("yang", name);
+		context.addParam(Const.KEY, name);
 	}
 
 }

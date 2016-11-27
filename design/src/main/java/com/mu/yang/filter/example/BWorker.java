@@ -6,12 +6,12 @@ import com.mu.yang.filter.Context;
 
 public class BWorker extends AbstractWorker {
 
-	public void doFilter(Context context) {
-		String name = (String)context.get("yang");
+	public void doWork(Context context) {
+		String name = (String)context.get(Const.KEY);
 
 		name += "da";
 
-		context.addParam("yang", name);
+		context.addParam(Const.KEY, name);
 	}
 
 }

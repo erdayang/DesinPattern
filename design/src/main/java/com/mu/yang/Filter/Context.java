@@ -1,4 +1,4 @@
-package com.mu.yang.Filter;
+package com.mu.yang.filter;
 
 public interface Context {
 

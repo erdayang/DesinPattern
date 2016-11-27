@@ -7,8 +7,8 @@ public abstract class AbstractWorker implements Worker {
 
     public abstract void doWork(Context context);
 
-    public final void work(Context context, RunnerChain runnerChain){
+    public final void work(Context context, WorkerChain workerChain){
         doWork(context);
-        runnerChain.doFilter(context);
+        workerChain.start(context);
     }
 }

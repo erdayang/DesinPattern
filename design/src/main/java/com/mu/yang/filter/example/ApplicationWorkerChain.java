@@ -13,23 +13,19 @@ public class ApplicationWorkerChain implements WorkerChain {
 	
 	private int cur = -1;
 
-	public WorkerChain addFilter(Worker worker) {
+	public WorkerChain addWorker(Worker worker) {
 		workers.add(worker);
 		return this;
 		
 	}
 
-	public void doFilter(Context context) {
+	@Override
+	public void start(Context context) {
 		cur = cur + 1;
-		System.out.println(context.get("yang"));
 		if(cur >= workers.size()){
 			return;
 		}
-		
 		workers.get(cur).work(context, this);
-		
-		//System.out.println(context.get("yang"));
-		
 	}
 
 	public Context context() {
