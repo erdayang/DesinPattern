@@ -1,7 +1,7 @@
-package com.mu.yang.filter.example;
+package com.mu.yang.worker.example;
 
-import com.mu.yang.filter.Context;
-import com.mu.yang.filter.WorkerChain;
+import com.mu.yang.worker.Context;
+import com.mu.yang.worker.WorkerChain;
 
 public class Application {
 

@@ -1,8 +1,8 @@
-package com.mu.yang.filter.example;
+package com.mu.yang.worker.example;
 
 
-import com.mu.yang.filter.AbstractWorker;
-import com.mu.yang.filter.Context;
+import com.mu.yang.worker.AbstractWorker;
+import com.mu.yang.worker.Context;
 
 public class BWorker extends AbstractWorker {
 

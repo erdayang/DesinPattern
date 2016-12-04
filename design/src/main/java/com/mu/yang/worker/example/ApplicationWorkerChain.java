@@ -1,8 +1,8 @@
-package com.mu.yang.filter.example;
+package com.mu.yang.worker.example;
 
-import com.mu.yang.filter.Context;
-import com.mu.yang.filter.Worker;
-import com.mu.yang.filter.WorkerChain;
+import com.mu.yang.worker.Context;
+import com.mu.yang.worker.Worker;
+import com.mu.yang.worker.WorkerChain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,6 @@ public class ApplicationWorkerChain implements WorkerChain {
 		
 	}
 
-	@Override
 	public void start(Context context) {
 		cur = cur + 1;
 		if(cur >= workers.size()){
