@@ -6,7 +6,7 @@ import com.mu.yang.worker.Context;
 public class AWorker extends AbstractWorker {
 
 	public void doWork(Context context) {
-		String name = (String)context.get(Const.KEY);
+		String name = (String)context.getParam(Const.KEY);
 		name += "xian";
 		context.addParam(Const.KEY, name);
 	}
