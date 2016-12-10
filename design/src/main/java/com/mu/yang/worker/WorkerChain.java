@@ -4,8 +4,6 @@ public interface WorkerChain {
 	
 	public WorkerChain addWorker(Worker worker);
 	
-	public void start(Context context);
+	public void next(Context context);
 	
-	public Context context();
-
 }

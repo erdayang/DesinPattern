@@ -9,8 +9,9 @@ public class Application {
 		Context context = new ApplicationContext();
 		context.addParam(Const.KEY, "");
 		WorkerChain chain = new ApplicationWorkerChain();
-		chain.addWorker(new AWorker()).addWorker(new BWorker());
-		chain.start(context);
+		chain.addWorker(new AWorker())
+				.addWorker(new BWorker());
+		chain.next(context);
 		System.out.println(context.get(Const.KEY));
 	}
 }
