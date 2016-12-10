@@ -12,6 +12,6 @@ public class Application {
 		chain.addWorker(new AWorker())
 				.addWorker(new BWorker());
 		chain.next(context);
-		System.out.println(context.get(Const.KEY));
+		System.out.println(context.getParam(Const.KEY));
 	}
 }

@@ -15,8 +15,7 @@ public class ApplicationContext implements Context {
 		
 	}
 
-	public Object get(String key) {
-		// TODO Auto-generated method stub
+	public Object getParam(String key) {
 		return map.get(key);
 	}
 
