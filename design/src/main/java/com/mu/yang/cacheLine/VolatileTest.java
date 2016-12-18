@@ -1,6 +1,6 @@
 package com.mu.yang.cacheLine;
 
-import sun.misc.Contended;
+//import sun.misc.Contended;
 
 /**
  * Created by xuanda007 on 2016/8/29.
@@ -13,7 +13,7 @@ public class VolatileTest {
      *
      *
      */
-    @Contended
+//    @Contended
     class VolatileLong{
         volatile long msg = 1l;
     }

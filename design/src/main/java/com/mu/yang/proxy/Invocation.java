@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 /**
  * Created by yangxianda on 2016/12/10.
  */
-public class ProxyHandler implements InvocationHandler {
+public class Invocation implements InvocationHandler {
 
 
     /**

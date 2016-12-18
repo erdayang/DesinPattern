@@ -5,6 +5,7 @@ package com.mu.yang.worker;
  */
 public abstract class AbstractWorker implements Worker {
 
+
     public abstract void doWork(Context context);
 
     /**

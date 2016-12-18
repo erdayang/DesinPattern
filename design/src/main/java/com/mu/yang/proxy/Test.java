@@ -18,7 +18,7 @@ public class Test {
         }
 
         public  T build(){
-            T t = (T)Proxy.newProxyInstance(clazz.getClassLoader(), new Class[] {clazz}, new ProxyHandler());
+            T t = (T)Proxy.newProxyInstance(clazz.getClassLoader(), new Class[] {clazz}, new Invocation());
 
             return   t;
         }
