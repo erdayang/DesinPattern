@@ -2,13 +2,11 @@ package com.mu.yang.rpc.connector;
 
 import com.alibaba.fastjson.JSON;
 import com.mu.yang.rpc.core.Connector;
-import com.mu.yang.rpc.core.Request;
-import com.mu.yang.rpc.core.Response;
+import com.mu.yang.rpc.entity.Request;
+import com.mu.yang.rpc.entity.Response;
 
 import java.io.*;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 /**
  * Created by yangxianda on 2016/12/18.

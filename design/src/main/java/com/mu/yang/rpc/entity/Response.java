@@ -1,4 +1,4 @@
-package com.mu.yang.rpc.core;
+package com.mu.yang.rpc.entity;
 
 import com.alibaba.fastjson.JSON;
 
@@ -9,7 +9,8 @@ import java.util.List;
  */
 public class Response {
     private String id;
-    private int code;
+    private ResultCode code;
+    private Throwable error;
     private Object result;
     private List<String> debugInfo;
 
@@ -21,11 +22,11 @@ public class Response {
         this.id = id;
     }
 
-    public int getCode() {
+    public ResultCode getCode() {
         return code;
     }
 
-    public void setCode(int code) {
+    public void setCode(ResultCode code) {
         this.code = code;
     }
 
@@ -45,12 +46,16 @@ public class Response {
         this.debugInfo = debugInfo;
     }
 
+    public Throwable getError() {
+        return error;
+    }
+
+    public void setError(Throwable error) {
+        this.error = error;
+    }
+
     public String toString(){
         return JSON.toJSONString(this);
     }
 }
 
- interface ResultCode{
-    int OK = 0;
-     int KO = -1;
-}

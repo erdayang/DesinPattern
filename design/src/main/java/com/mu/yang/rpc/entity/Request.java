@@ -1,9 +1,12 @@
-package com.mu.yang.rpc.core;
+package com.mu.yang.rpc.entity;
 
 import com.alibaba.fastjson.JSON;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by yangxianda on 2016/12/18.
@@ -12,8 +15,13 @@ public class Request implements Serializable{
     private String id;
     private String clazz;
     private String method;
+    private Class<?>[] paramType;
     private Object[] params;
-    private boolean isDebug = false;
+    private boolean debug = false;
+
+    public Request(){
+        this.id = UUID.randomUUID().toString();
+    }
 
     public String getId() {
         return id;
@@ -45,6 +53,22 @@ public class Request implements Serializable{
 
     public void setParams(Object[] params) {
         this.params = params;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public Class<?>[] getParamType() {
+        return paramType;
+    }
+
+    public void setParamType(Class<?>[] paramType) {
+        this.paramType = paramType;
     }
 
     public String toString(){

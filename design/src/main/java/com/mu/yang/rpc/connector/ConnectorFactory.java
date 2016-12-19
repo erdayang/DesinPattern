@@ -2,9 +2,9 @@ package com.mu.yang.rpc.connector;
 
 
 import com.mu.yang.rpc.core.Connector;
-import com.mu.yang.rpc.core.Request;
-import com.mu.yang.rpc.core.Response;
-import com.sun.corba.se.impl.legacy.connection.DefaultSocketFactory;
+import com.mu.yang.rpc.core.ConnectorEngine;
+import com.mu.yang.rpc.entity.Request;
+import com.mu.yang.rpc.entity.Response;
 
 import javax.net.SocketFactory;
 import java.io.IOException;
@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by yangxianda on 2016/12/18.
  */
-public class ConnectorFactory {
+public class ConnectorFactory implements ConnectorEngine{
     private SocketFactory socketFactory = SocketFactory.getDefault();
     private List<Connector> connectors = new ArrayList<Connector>();
     private AtomicInteger id = new AtomicInteger();
