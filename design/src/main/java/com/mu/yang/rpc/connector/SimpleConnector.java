@@ -14,8 +14,7 @@ import java.net.Socket;
 public class SimpleConnector implements Connector {
     private InputStream inputStream;
     private OutputStream outputStream;
-    private final int id;
-
+    private final long id;
     public SimpleConnector(int id, Socket socket){
         this.id = id;
         System.out.println("new Connector id: "+ id);
@@ -25,6 +24,10 @@ public class SimpleConnector implements Connector {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public long getId() {
+        return this.id;
     }
 
     public Response send(Request request) {

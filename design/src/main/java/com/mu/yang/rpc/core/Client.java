@@ -4,6 +4,7 @@ import com.mu.yang.proxy.IHelloWorld;
 import com.mu.yang.rpc.proxy.Invoker;
 import com.mu.yang.rpc.connector.ConnectorFactory;
 import com.mu.yang.rpc.utils.NetUtils;
+import com.mu.yang.utils.TimeUtil;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -47,6 +48,15 @@ public class Client {
         Client client = new Client();
 
         IHelloWorld helloWorld = client.proxyBuilder(IHelloWorld.class).withInterface(IHelloWorld.class).build();
-        System.out.println(helloWorld.get("here"));
+        long allTtime = 0;
+        for(int i = 0; i < 100; i ++){
+            long begin = TimeUtil.now();
+            System.out.println(helloWorld.get("here"));
+            long end = TimeUtil.now() ;
+            System.out.println("consume: " + (end - begin));
+            allTtime+=(end - begin);
+        }
+        System.out.println("all consume: " + allTtime);
+        System.out.println("average consume: " + allTtime/10);
     }
 }

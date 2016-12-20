@@ -10,9 +10,4 @@ public class TimeUtil {
         return System.currentTimeMillis();
     }
 
-    public static long now(String key){
-        return System.currentTimeMillis();
-    }
-
-
 }

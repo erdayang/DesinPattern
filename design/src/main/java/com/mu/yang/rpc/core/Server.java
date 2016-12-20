@@ -40,7 +40,7 @@ public class Server {
         return this;
     }
 
-    public void init(){
+    public void start(){
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException e) {
@@ -49,68 +49,100 @@ public class Server {
         try {
             while (true) {
                 Socket socket = serverSocket.accept();
+                socket.setTcpNoDelay(true);
                 System.out.println("get new Connection: from: " + socket.getInetAddress() +" : " + socket.getPort());
-                process(socket);
+                new Thread(new Handler(socket)).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void process(Socket socket) throws IOException {
-        InputStream inputStream = socket.getInputStream();
-        byte[] requestBytes = new byte[4096];
-        int size = 0;
-        size = inputStream.read(requestBytes);
+    class Handler implements Runnable{
 
-        String requestString = new String(requestBytes);
-
-        System.out.println("get request： " + requestString);
-
-        Request request = JSON.parseObject(requestString, Request.class);
-
-        Response response = process(request);
-        OutputStream outputStream = socket.getOutputStream();
-
-        outputStream.write(response.toString().getBytes());
-        outputStream.flush();
-        System.out.println("send response: "+ response);
-    }
-
-    public Response process(Request request){
-        Response response = new Response();
-        response.setId(request.getId());
-        try {
-            Class clazz = Class.forName(request.getClazz());
-            Object obj = objectMap.get(request.getClazz());
-
-            Method method = clazz.getMethod(request.getMethod(), request.getParamType());
-            Object result = method.invoke(obj, request.getParams());
-            response.setResult(result);
-            response.setCode(ResultCode.SUCCESS);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            response.setCode(ResultCode.NOSUCHCLASS);
-            response.setError(e);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            response.setCode(ResultCode.NOSUCHMETHOD);
-            response.setError(e);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-            response.setCode(ResultCode.NOSUCHMETHOD);
-            response.setError(e);
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        Socket socket = null;
+        InputStream inputStream;
+        OutputStream outputStream;
+        Handler(Socket socket){
+            this.socket = socket;
+            init();
         }
-        return response;
+        void init(){
+            try {
+                inputStream = socket.getInputStream();
+                outputStream = socket.getOutputStream();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        @Override
+        public void run() {
+            while(!Thread.interrupted()){
+                process();
+            }
+        }
+
+        public void process(){
+            try {
+                byte[] requestBytes = new byte[4096];
+                int size = 0;
+                size = inputStream.read(requestBytes);
+
+                String requestString = new String(requestBytes);
+
+                System.out.println("get request： " + requestString);
+
+                Request request = JSON.parseObject(requestString, Request.class);
+
+                Response response = processRequest(request);
+                OutputStream outputStream = socket.getOutputStream();
+
+                outputStream.write(response.toString().getBytes());
+                outputStream.flush();
+                System.out.println("send response: "+ response);
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+
+        public Response processRequest(Request request){
+            Response response = new Response();
+            response.setId(request.getId());
+            try {
+                Class clazz = Class.forName(request.getClazz());
+                Object obj = objectMap.get(request.getClazz());
+
+                Method method = clazz.getMethod(request.getMethod(), request.getParamType());
+                Object result = method.invoke(obj, request.getParams());
+                response.setResult(result);
+                response.setCode(ResultCode.SUCCESS);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+                response.setCode(ResultCode.NOSUCHCLASS);
+                response.setError(e);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                response.setCode(ResultCode.NOSUCHMETHOD);
+                response.setError(e);
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+                response.setCode(ResultCode.NOSUCHMETHOD);
+                response.setError(e);
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+            return response;
+        }
+
     }
+
+
 
 
 
 
     public static void main(String[] args){
         Server server = new Server(8080);
-        server.addClass(HelloWorld.class).init();
+        server.addClass(HelloWorld.class).start();
     }
 }
