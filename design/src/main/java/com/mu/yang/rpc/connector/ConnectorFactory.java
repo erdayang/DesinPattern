@@ -18,6 +18,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * simple connector manager,
+ * 1, the strategy for creating new connector
+ * 2, the strategy for getting the connector to handle the new request
+ * 3, the strategy for deploying the idle connectors
  * Created by yangxianda on 2016/12/18.
  */
 public class ConnectorFactory implements ConnectorEngine{
@@ -88,40 +92,19 @@ public class ConnectorFactory implements ConnectorEngine{
         return connector;
     }
 
-    public void send(Request request) {
-        queue.offer(request);
+    public Response send(Request request) {
+        Connector connector = getConnector();
+        return connector.send(request);
     }
 
-    private class MessageHandler implements Runnable{
-
-        @Override
-        public void run() {
-            Request request = null;
-            try {
-                request = queue.take();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            Connector connector = getConnector();
-            connector.send(request);
+    @Override
+    public void shutdown() {
+        for(int i = 0; i < connectors.size(); i++){
+            connectors.get(i).shutdown();
         }
     }
 
-
-
-    public static void main(String [] args) throws UnknownHostException {
-        ConnectorFactory factory = ConnectorFactory.getInstance(InetAddress.getLocalHost());
-        for(int i = 0; i < 5; i ++) {
-            Connector connector = factory.getConnector();
-
-            Request request = new Request();
-            request.setId(UUID.randomUUID().toString());
-
-            Response response = connector.send(request);
-
-        }
+    public enum State{
+        INITING,INITED,WORKING,SHUTDOWNING,TERMANITE;
     }
-
-
 }

@@ -8,4 +8,5 @@ import com.mu.yang.rpc.entity.Response;
  */
 public interface Connector {
     Response send(Request request);
+    void shutdown();
 }

@@ -14,7 +14,7 @@ import java.lang.reflect.Proxy;
  */
 public class Client {
 
-    ConnectorFactory factory = ConnectorFactory.getInstance(NetUtils.getInetAddress("127.0.0.1"));
+    private static ConnectorFactory factory = ConnectorFactory.getInstance(NetUtils.getInetAddress("127.0.0.1"));
     public Client(){
 
     }
@@ -39,8 +39,15 @@ public class Client {
 
         public  T build(){
             T t = (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, invocation);
-
             return   t;
+        }
+    }
+
+    public static class ShutDown implements Runnable{
+
+        @Override
+        public void run() {
+            factory.shutdown();
         }
     }
 
@@ -49,7 +56,8 @@ public class Client {
 
         IHelloWorld helloWorld = client.proxyBuilder(IHelloWorld.class).withInterface(IHelloWorld.class).build();
         long allTtime = 0;
-        for(int i = 0; i < 100; i ++){
+        int count = 100;
+        for(int i = 0; i < count; i ++){
             long begin = TimeUtil.now();
             System.out.println(helloWorld.get("here"));
             long end = TimeUtil.now() ;
@@ -57,6 +65,8 @@ public class Client {
             allTtime+=(end - begin);
         }
         System.out.println("all consume: " + allTtime);
-        System.out.println("average consume: " + allTtime/10);
+        System.out.println("average consume: " + allTtime/count);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(new ShutDown()));
     }
 }

@@ -51,4 +51,18 @@ public class SimpleConnector implements Connector {
         System.out.println("receive response: "+ responseString);
         return JSON.parseObject(responseString, Response.class);
     }
+
+    @Override
+    public void shutdown() {
+        try {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (outputStream != null) {
+                outputStream.close();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
 }

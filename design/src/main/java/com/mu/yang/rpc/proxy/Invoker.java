@@ -36,13 +36,12 @@ public class Invoker implements InvocationHandler {
         request.setParamType(paramTypes);
         request.setParams(args);
 
-        Connector connector = connectorEngine.getConnector();
-        Response response = connector.send(request);
+        Response response = connectorEngine.send(request);
 
         switch(response.getCode()){
             case SUCCESS: return response.getResult();
             case EXEPTION: throw new Exception(response.getError());
         }
-        return null;
+        return response.getResult();
     }
 }
