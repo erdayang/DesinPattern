@@ -6,8 +6,6 @@ import com.mu.yang.rpc.entity.Response;
 /**
  * Created by yangxianda on 2016/12/18.
  */
-public interface ConnectorEngine {
+public interface ConnectorEngine extends Connector{
     Connector getConnector();
-    Response send(Request request);
-    void shutdown();
 }

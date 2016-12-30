@@ -19,9 +19,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * simple connector manager,
- * 1, the strategy for creating new connector
- * 2, the strategy for getting the connector to handle the new request
- * 3, the strategy for deploying the idle connectors
+ * 1, the strategy when creating new connector
+ * 2, the strategy how to get the connector to handle the new request
+ * 3, the strategy for deploying the idle connectors ???
  * Created by yangxianda on 2016/12/18.
  */
 public class ConnectorFactory implements ConnectorEngine{
@@ -32,29 +32,38 @@ public class ConnectorFactory implements ConnectorEngine{
     private static int MAX_CONNECTOR = 4; // default is 5
     private InetAddress serverAddress = null;
     private static int port = 8080;
+
+    /** may be we can use the producer-cosumer type to digest the requests*/
     private LinkedBlockingQueue<Request> queue = new LinkedBlockingQueue<Request>();
+    private boolean lazyInit = true;
 
     static{
-        MAX_CONNECTOR = 2; //  read from property
+        MAX_CONNECTOR = 8; //  read from property
         port = 8080;
     }
 
     private static ConnectorFactory instance = null;
-    private ConnectorFactory(InetAddress address){
+    private ConnectorFactory(InetAddress address, int port){
         this.serverAddress = address;
-        init();
+        this.port = port;
+        if(lazyInit) {
+            init();
+        }
     }
-    public static ConnectorFactory getInstance(InetAddress address){
+    public static ConnectorFactory getInstance(InetAddress address, int port){
         synchronized (ConnectorFactory.class){
             if(null == instance){
                 synchronized (ConnectorFactory.class){
-                    instance = new ConnectorFactory(address);
+                    instance = new ConnectorFactory(address, port);
                 }
             }
         }
         return instance;
     }
 
+    /**
+     * init all connector before communicating
+     */
     private void init(){
         while(id.intValue() < MAX_CONNECTOR){
             Socket socket = null;
@@ -72,6 +81,10 @@ public class ConnectorFactory implements ConnectorEngine{
     }
 
 
+    /**
+     * we can define one connector choosing policy
+     * @return
+     */
     public Connector getConnector(){
         if(id.intValue() >= MAX_CONNECTOR){
             System.out.println("get connector from list");
@@ -107,4 +120,5 @@ public class ConnectorFactory implements ConnectorEngine{
     public enum State{
         INITING,INITED,WORKING,SHUTDOWNING,TERMANITE;
     }
+
 }
