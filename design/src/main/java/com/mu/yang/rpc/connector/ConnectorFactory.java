@@ -24,41 +24,30 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 3, the strategy for deploying the idle connectors ???
  * Created by yangxianda on 2016/12/18.
  */
-public class ConnectorFactory implements ConnectorEngine{
-    private SocketFactory socketFactory = SocketFactory.getDefault();
-    private List<Connector> connectors = new ArrayList<Connector>();
-    private AtomicInteger id = new AtomicInteger();
-    private AtomicInteger ROUNDROBIN = new AtomicInteger(0);
-    private static int MAX_CONNECTOR = 4; // default is 5
-    private InetAddress serverAddress = null;
-    private static int port = 8080;
+public abstract class ConnectorFactory implements ConnectorEngine{
+    protected SocketFactory socketFactory = SocketFactory.getDefault();
+    protected List<Connector> connectors = new ArrayList<Connector>();
+    protected AtomicInteger id = new AtomicInteger();
+    protected AtomicInteger ROUNDROBIN = new AtomicInteger(0);
+    protected static int MAX_CONNECTOR = 1; // default is 5
+    protected InetAddress serverAddress = null;
+    protected static int port = 8080;
 
     /** may be we can use the producer-cosumer type to digest the requests*/
     private LinkedBlockingQueue<Request> queue = new LinkedBlockingQueue<Request>();
     private boolean lazyInit = true;
 
     static{
-        MAX_CONNECTOR = 8; //  read from property
+        MAX_CONNECTOR = 1; //  read from property
         port = 8080;
     }
 
-    private static ConnectorFactory instance = null;
-    private ConnectorFactory(InetAddress address, int port){
+    public ConnectorFactory(InetAddress address, int port){
         this.serverAddress = address;
         this.port = port;
         if(lazyInit) {
             init();
         }
-    }
-    public static ConnectorFactory getInstance(InetAddress address, int port){
-        synchronized (ConnectorFactory.class){
-            if(null == instance){
-                synchronized (ConnectorFactory.class){
-                    instance = new ConnectorFactory(address, port);
-                }
-            }
-        }
-        return instance;
     }
 
     /**
@@ -66,47 +55,21 @@ public class ConnectorFactory implements ConnectorEngine{
      */
     private void init(){
         while(id.intValue() < MAX_CONNECTOR){
-            Socket socket = null;
-            try {
-                socket = socketFactory.createSocket(serverAddress, port);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            System.out.println("create new client: " + socket.getPort());
-            int newId = id.getAndIncrement();
-            Connector connector = new SimpleConnector(newId, socket);
-            connectors.add(connector);
+            createConnector();
             System.out.println("connectors size: " + connectors.size());
         }
     }
 
 
-    /**
-     * we can define one connector choosing policy
-     * @return
-     */
-    public Connector getConnector(){
-        if(id.intValue() >= MAX_CONNECTOR){
-            System.out.println("get connector from list");
-            return connectors.get(ROUNDROBIN.getAndIncrement() % MAX_CONNECTOR);
-        }
-        Socket socket = null;
-        try {
-            socket = socketFactory.createSocket(serverAddress, port);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("create new client: " + socket.getPort());
-        int newId = id.getAndIncrement();
-        Connector connector = new SimpleConnector(newId, socket);
-        connectors.add(connector);
-        System.out.println("connectors size: " + connectors.size());
 
-        return connector;
-    }
+    @Override
+    public abstract Connector createConnector();
+
+    @Override
+    public abstract Connector chooseConnector();
 
     public Response send(Request request) {
-        Connector connector = getConnector();
+        Connector connector = chooseConnector();
         return connector.send(request);
     }
 
@@ -115,10 +78,6 @@ public class ConnectorFactory implements ConnectorEngine{
         for(int i = 0; i < connectors.size(); i++){
             connectors.get(i).shutdown();
         }
-    }
-
-    public enum State{
-        INITING,INITED,WORKING,SHUTDOWNING,TERMANITE;
     }
 
 }

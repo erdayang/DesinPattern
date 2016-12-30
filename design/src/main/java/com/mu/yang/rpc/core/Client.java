@@ -1,6 +1,7 @@
 package com.mu.yang.rpc.core;
 
 import com.mu.yang.proxy.IHelloWorld;
+import com.mu.yang.rpc.connector.DefaultConnectorFactory;
 import com.mu.yang.rpc.proxy.Invoker;
 import com.mu.yang.rpc.connector.ConnectorFactory;
 import com.mu.yang.utils.TimeUtil;
@@ -63,7 +64,7 @@ public class Client {
         }
 
         public  T build(){
-            factory = ConnectorFactory.getInstance(server, port);
+            factory = new DefaultConnectorFactory(server, port);
             invocation = new Invoker(factory);
             T t = (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, invocation);
             return   t;
@@ -82,7 +83,7 @@ public class Client {
                 .withPort(8080)
                 .build();
         long allTtime = 0;
-        int count = 100000;
+        int count = 1000;
         for(int i = 0; i < count; i ++){
             long begin = TimeUtil.now();
             System.out.println(helloWorld.get("here"));
