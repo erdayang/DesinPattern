@@ -7,14 +7,18 @@ import com.mu.yang.rpc.entity.Response;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by yangxianda on 2016/12/18.
  */
-public class SimpleConnector implements Connector {
+public class SimpleConnector implements Connector, Runnable {
     private InputStream inputStream;
     private OutputStream outputStream;
     private final long id;
+    Map<String, ResponseFuture> futureMap = new ConcurrentHashMap<String, ResponseFuture>();
     public SimpleConnector(int id, Socket socket){
         this.id = id;
         System.out.println("new Connector id: "+ id);
@@ -24,13 +28,14 @@ public class SimpleConnector implements Connector {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        new Thread(this).start();
     }
 
     public long getId() {
         return this.id;
     }
 
-    public Response send(Request request) {
+    public ResponseFuture send(Request request) {
 
         System.out.println("send request: " + request);
 
@@ -40,16 +45,10 @@ public class SimpleConnector implements Connector {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        byte[] result = new byte[4096];
-        int size = 0;
-        try {
-            size = inputStream.read(result);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String responseString = new String(result);
-        System.out.println("receive response: "+ responseString);
-        return JSON.parseObject(responseString, Response.class);
+
+        ResponseFuture responseFuture = new ResponseFuture(request);
+        futureMap.put(request.getId(), responseFuture);
+        return responseFuture;
     }
 
     @Override
@@ -61,7 +60,30 @@ public class SimpleConnector implements Connector {
             if (outputStream != null) {
                 outputStream.close();
             }
+            Thread.currentThread().interrupt();
         }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void run() {
+        try {
+            for(;;) {
+                byte[] result = new byte[4096];
+                int size = 0;
+                    size = inputStream.read(result);
+                String responseString = new String(result);
+                System.out.println("receive response: " + responseString);
+                Response response = JSON.parseObject(responseString, Response.class);
+                if(null != response.getId()) {
+                    ResponseFuture future = futureMap.get(response.getId());
+                    if(null != future){
+                        future.done(response);
+                    }
+                }
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

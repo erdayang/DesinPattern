@@ -68,7 +68,7 @@ public abstract class ConnectorFactory implements ConnectorEngine{
     @Override
     public abstract Connector chooseConnector();
 
-    public Response send(Request request) {
+    public ResponseFuture send(Request request) {
         Connector connector = chooseConnector();
         return connector.send(request);
     }
