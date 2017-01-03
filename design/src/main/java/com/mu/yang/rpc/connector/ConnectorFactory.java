@@ -19,81 +19,57 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * simple connector manager,
- * 1, the strategy for creating new connector
- * 2, the strategy for getting the connector to handle the new request
- * 3, the strategy for deploying the idle connectors
+ * 1, the strategy when creating new connector
+ * 2, the strategy how to get the connector to handle the new request
+ * 3, the strategy for deploying the idle connectors ???
  * Created by yangxianda on 2016/12/18.
  */
-public class ConnectorFactory implements ConnectorEngine{
-    private SocketFactory socketFactory = SocketFactory.getDefault();
-    private List<Connector> connectors = new ArrayList<Connector>();
-    private AtomicInteger id = new AtomicInteger();
-    private AtomicInteger ROUNDROBIN = new AtomicInteger(0);
-    private static int MAX_CONNECTOR = 4; // default is 5
-    private InetAddress serverAddress = null;
-    private static int port = 8080;
+public abstract class ConnectorFactory implements ConnectorEngine{
+    protected SocketFactory socketFactory = SocketFactory.getDefault();
+    protected List<Connector> connectors = new ArrayList<Connector>();
+    protected AtomicInteger id = new AtomicInteger();
+    protected AtomicInteger ROUNDROBIN = new AtomicInteger(0);
+    protected static int MAX_CONNECTOR = 1; // default is 5
+    protected InetAddress serverAddress = null;
+    protected static int port = 8080;
+
+    /** may be we can use the producer-cosumer type to digest the requests*/
     private LinkedBlockingQueue<Request> queue = new LinkedBlockingQueue<Request>();
+    private boolean lazyInit = true;
 
     static{
-        MAX_CONNECTOR = 2; //  read from property
+        MAX_CONNECTOR = 1; //  read from property
         port = 8080;
     }
 
-    private static ConnectorFactory instance = null;
-    private ConnectorFactory(InetAddress address){
+    public ConnectorFactory(InetAddress address, int port){
         this.serverAddress = address;
-        init();
-    }
-    public static ConnectorFactory getInstance(InetAddress address){
-        synchronized (ConnectorFactory.class){
-            if(null == instance){
-                synchronized (ConnectorFactory.class){
-                    instance = new ConnectorFactory(address);
-                }
-            }
+        this.port = port;
+        if(lazyInit) {
+            init();
         }
-        return instance;
     }
 
+    /**
+     * init all connector before communicating
+     */
     private void init(){
         while(id.intValue() < MAX_CONNECTOR){
-            Socket socket = null;
-            try {
-                socket = socketFactory.createSocket(serverAddress, port);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            System.out.println("create new client: " + socket.getPort());
-            int newId = id.getAndIncrement();
-            Connector connector = new SimpleConnector(newId, socket);
-            connectors.add(connector);
+            createConnector();
             System.out.println("connectors size: " + connectors.size());
         }
     }
 
 
-    public Connector getConnector(){
-        if(id.intValue() >= MAX_CONNECTOR){
-            System.out.println("get connector from list");
-            return connectors.get(ROUNDROBIN.getAndIncrement() % MAX_CONNECTOR);
-        }
-        Socket socket = null;
-        try {
-            socket = socketFactory.createSocket(serverAddress, port);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("create new client: " + socket.getPort());
-        int newId = id.getAndIncrement();
-        Connector connector = new SimpleConnector(newId, socket);
-        connectors.add(connector);
-        System.out.println("connectors size: " + connectors.size());
 
-        return connector;
-    }
+    @Override
+    public abstract Connector createConnector();
 
-    public Response send(Request request) {
-        Connector connector = getConnector();
+    @Override
+    public abstract Connector chooseConnector();
+
+    public ResponseFuture send(Request request) {
+        Connector connector = chooseConnector();
         return connector.send(request);
     }
 
@@ -104,7 +80,4 @@ public class ConnectorFactory implements ConnectorEngine{
         }
     }
 
-    public enum State{
-        INITING,INITED,WORKING,SHUTDOWNING,TERMANITE;
-    }
 }

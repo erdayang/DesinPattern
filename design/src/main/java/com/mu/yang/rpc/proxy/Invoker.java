@@ -1,5 +1,6 @@
 package com.mu.yang.rpc.proxy;
 
+import com.mu.yang.rpc.connector.ResponseFuture;
 import com.mu.yang.rpc.core.Connector;
 import com.mu.yang.rpc.core.ConnectorEngine;
 import com.mu.yang.rpc.entity.Request;
@@ -36,12 +37,8 @@ public class Invoker implements InvocationHandler {
         request.setParamType(paramTypes);
         request.setParams(args);
 
-        Response response = connectorEngine.send(request);
+        ResponseFuture responseFuture = connectorEngine.send(request);
 
-        switch(response.getCode()){
-            case SUCCESS: return response.getResult();
-            case EXEPTION: throw new Exception(response.getError());
-        }
-        return response.getResult();
+        return responseFuture.get();
     }
 }
