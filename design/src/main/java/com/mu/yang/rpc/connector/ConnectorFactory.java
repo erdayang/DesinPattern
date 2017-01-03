@@ -50,6 +50,10 @@ public abstract class ConnectorFactory implements ConnectorEngine{
         }
     }
 
+    public ConnectorFactory(String zookeeper, String jdns){
+
+    }
+
     /**
      * init all connector before communicating
      */

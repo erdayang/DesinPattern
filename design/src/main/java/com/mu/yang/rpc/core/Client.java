@@ -106,17 +106,18 @@ public class Client {
                 .withPort(8080)
                 .build();
         long allTtime = 0;
-        int count = 1000;
+        int count = 10;
         for(int i = 0; i < count; i ++){
             long begin = TimeUtil.now();
             System.out.println(helloWorld.get("here"));
+          //  System.out.println(helloWorld.get());
             long end = TimeUtil.now() ;
             System.out.println("consume: " + (end - begin));
             allTtime+=(end - begin);
         }
         System.out.println("all consume: " + allTtime);
         System.out.println("average consume: " + allTtime/count);
-
+        System.exit(0);
         Runtime.getRuntime().addShutdownHook(new Thread(){
             public void run(){
                 Client.shutdown();

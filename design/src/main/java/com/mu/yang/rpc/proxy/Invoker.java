@@ -29,10 +29,13 @@ public class Invoker implements InvocationHandler {
         Request request = new Request();
         request.setMethod(method.getName());
         request.setClazz(method.getDeclaringClass().getName());
-        Class<?>[] paramTypes = new Class<?>[args.length];
-        for(int i = 0; i < args.length; i++){
-            Object obj = args[i];
-            paramTypes[i] = (obj.getClass());
+        Class<?>[] paramTypes = null;
+        if(null != args) {
+            paramTypes = new Class<?>[args.length];
+            for (int i = 0; i < args.length; i++) {
+                Object obj = args[i];
+                paramTypes[i] = (obj.getClass());
+            }
         }
         request.setParamType(paramTypes);
         request.setParams(args);

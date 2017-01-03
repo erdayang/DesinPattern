@@ -31,6 +31,8 @@ public class SimpleConnector implements Connector, Runnable {
         new Thread(this).start();
     }
 
+
+
     public long getId() {
         return this.id;
     }
@@ -60,9 +62,10 @@ public class SimpleConnector implements Connector, Runnable {
             if (outputStream != null) {
                 outputStream.close();
             }
-            Thread.currentThread().interrupt();
         }catch (IOException e){
             e.printStackTrace();
+        }finally {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -85,6 +88,7 @@ public class SimpleConnector implements Connector, Runnable {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
     }
 }
