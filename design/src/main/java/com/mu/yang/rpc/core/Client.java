@@ -27,6 +27,9 @@ public class Client {
     public class ProxyBuilder<T>{
         private Class<T> clazz;
         private InvocationHandler invocation;
+        private boolean isServiceDiscovery;
+        private String zookeeper;
+        private String path;
         public ProxyBuilder(){
             this.clazz = clazz;
             invocation = new Invoker(factory);
@@ -34,6 +37,21 @@ public class Client {
 
         public ProxyBuilder<T> withInterface(Class<T> clazz){
             this.clazz = clazz;
+            return this;
+        }
+
+        public ProxyBuilder<T> withServiceDiscovery(boolean isServiceDiscovery){
+            this.isServiceDiscovery = isServiceDiscovery;
+            return this;
+        }
+
+        public ProxyBuilder<T> withZookeeper(String zookeeper){
+            this.zookeeper = zookeeper;
+            return this;
+        }
+
+        public ProxyBuilder<T> withPath(String path){
+            this.path = path;
             return this;
         }
 
