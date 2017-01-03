@@ -4,7 +4,6 @@ import com.mu.yang.proxy.IHelloWorld;
 import com.mu.yang.rpc.connector.DefaultConnectorFactory;
 import com.mu.yang.rpc.proxy.Invoker;
 import com.mu.yang.rpc.connector.ConnectorFactory;
-import com.mu.yang.rpc.utils.NetUtils;
 import com.mu.yang.utils.TimeUtil;
 
 import java.lang.reflect.InvocationHandler;
@@ -17,13 +16,13 @@ import java.net.UnknownHostException;
  */
 public class Client {
 
-    private static ConnectorFactory factory = ConnectorFactory.getInstance(NetUtils.getInetAddress("127.0.0.1"));
+    private static ConnectorFactory factory ;
     public Client(){
 
     }
 
     public <T> ProxyBuilder<T> proxyBuilder(Class<T> clazz){
-        return new ProxyBuilder<T>();
+        return new ProxyBuilder<T>(clazz);
     }
 
 
@@ -33,20 +32,22 @@ public class Client {
         private boolean isServiceDiscovery;
         private String zookeeper;
         private String path;
-        public ProxyBuilder(){
         private InetAddress server;
         private int port;
         private String encodeType;
+        private boolean sdSwitch = false;
         public ProxyBuilder(Class<T> clazz){
             this.clazz = clazz;
         }
 
-        public ProxyBuilder<T> withServer(String server){
+        public ProxyBuilder<T> withServer(String server) {
             try {
                 this.server = InetAddress.getByName("127.0.0.1");
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
+            return this;
+        }
         public ProxyBuilder<T> withInterface(Class<T> clazz){
             this.clazz = clazz;
             return this;
