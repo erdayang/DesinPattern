@@ -38,7 +38,7 @@ public class Client {
 
         public ProxyBuilder<T> withServer(String server){
             try {
-                this.server = InetAddress.getByName("127.0.0.1");
+                this.server = InetAddress.getByName(server);
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
@@ -67,7 +67,7 @@ public class Client {
             factory = new DefaultConnectorFactory(server, port);
             invocation = new Invoker(factory);
             T t = (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, invocation);
-            return   t;
+            return t;
         }
     }
 

@@ -25,7 +25,12 @@ public class Invoker implements InvocationHandler {
 
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        Request request = buildRequest(method, args);
+        ResponseFuture responseFuture = connectorEngine.send(request);
+        return responseFuture.get();
+    }
 
+    public Request buildRequest(Method method, Object[] args){
         Request request = new Request();
         request.setMethod(method.getName());
         request.setClazz(method.getDeclaringClass().getName());
@@ -36,9 +41,6 @@ public class Invoker implements InvocationHandler {
         }
         request.setParamType(paramTypes);
         request.setParams(args);
-
-        ResponseFuture responseFuture = connectorEngine.send(request);
-
-        return responseFuture.get();
+        return request;
     }
 }

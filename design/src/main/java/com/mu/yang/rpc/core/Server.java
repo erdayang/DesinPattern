@@ -21,6 +21,10 @@ public class Server {
 
     private ServerSocket serverSocket = null;
     private int port = 8080;
+
+    /**
+     * the delegate objects to
+     */
     private Map<String, Object> objectMap = new HashMap<String, Object>();
     public Server(int port){
         this.port = port;
