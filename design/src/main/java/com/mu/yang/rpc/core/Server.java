@@ -62,6 +62,10 @@ public class Server {
         }
     }
 
+    public void shutdown(){
+
+    }
+
     class Handler implements Runnable{
 
         Socket socket = null;
@@ -106,6 +110,8 @@ public class Server {
                 System.out.println("send response: "+ response);
             }catch (IOException e){
                 e.printStackTrace();
+            }finally {
+                Thread.currentThread().interrupt();
             }
         }
 

@@ -16,7 +16,7 @@ import java.net.UnknownHostException;
  */
 public class Client {
 
-    private static ConnectorFactory factory;
+    private static ConnectorFactory factory ;
     public Client(){
 
     }
@@ -26,22 +26,45 @@ public class Client {
     }
 
 
-    public static class ProxyBuilder<T>{
+    public class ProxyBuilder<T>{
         private Class<T> clazz;
         private InvocationHandler invocation;
+        private boolean isServiceDiscovery;
+        private String zookeeper;
+        private String path;
         private InetAddress server;
         private int port;
         private String encodeType;
+        private boolean sdSwitch = false;
         public ProxyBuilder(Class<T> clazz){
             this.clazz = clazz;
         }
 
-        public ProxyBuilder<T> withServer(String server){
+        public ProxyBuilder<T> withServer(String server) {
             try {
                 this.server = InetAddress.getByName(server);
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
+            return this;
+        }
+        public ProxyBuilder<T> withInterface(Class<T> clazz){
+            this.clazz = clazz;
+            return this;
+        }
+
+        public ProxyBuilder<T> withServiceDiscovery(boolean isServiceDiscovery){
+            this.isServiceDiscovery = isServiceDiscovery;
+            return this;
+        }
+
+        public ProxyBuilder<T> withZookeeper(String zookeeper){
+            this.zookeeper = zookeeper;
+            return this;
+        }
+
+        public ProxyBuilder<T> withPath(String path){
+            this.path = path;
             return this;
         }
 
@@ -83,17 +106,18 @@ public class Client {
                 .withPort(8080)
                 .build();
         long allTtime = 0;
-        int count = 1000;
+        int count = 10;
         for(int i = 0; i < count; i ++){
             long begin = TimeUtil.now();
             System.out.println(helloWorld.get("here"));
+          //  System.out.println(helloWorld.get());
             long end = TimeUtil.now() ;
             System.out.println("consume: " + (end - begin));
             allTtime+=(end - begin);
         }
         System.out.println("all consume: " + allTtime);
         System.out.println("average consume: " + allTtime/count);
-
+        System.exit(0);
         Runtime.getRuntime().addShutdownHook(new Thread(){
             public void run(){
                 Client.shutdown();
