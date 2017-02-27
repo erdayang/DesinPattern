@@ -42,6 +42,7 @@ public class SimpleConnector implements Connector, Runnable {
         System.out.println("send request: " + request);
 
         try {
+            outputStream.write(request.toString().getBytes().length);
             outputStream.write(request.toString().getBytes());
             outputStream.flush();
         } catch (IOException e) {
