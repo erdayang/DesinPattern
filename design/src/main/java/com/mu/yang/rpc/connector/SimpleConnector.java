@@ -7,6 +7,7 @@ import com.mu.yang.rpc.entity.Response;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,8 +43,11 @@ public class SimpleConnector implements Connector, Runnable {
         System.out.println("send request: " + request);
 
         try {
-            outputStream.write(request.toString().getBytes().length);
-            outputStream.write(request.toString().getBytes());
+            int length = request.toString().getBytes().length;
+            ByteBuffer bytes = ByteBuffer.allocate(4 + length);
+            bytes.putInt(length);
+            bytes.put(request.toString().getBytes());
+            outputStream.write(bytes.array());
             outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();

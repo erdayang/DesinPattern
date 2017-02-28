@@ -14,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Reader extends Thread{
     private  final Selector readSelector;
     private BlockingQueue<Connection> connections;
-    Reader(String name) throws IOException {
+    public Reader(String name) throws IOException {
         super(name);
         readSelector = Selector.open();
         connections = new LinkedBlockingQueue<Connection>();
@@ -31,7 +31,7 @@ public class Reader extends Thread{
             SelectionKey key = null;
             try {
                 int size = connections.size();
-                for(int i = size; i >= 0; i--){
+                for(int i = size; i > 0; i--){
                     Connection connection = connections.take();
                     connection.channel.register(readSelector, SelectionKey.OP_READ, connection);
                     System.out.println(this.getName()+ ": register read selector..." + connections.size());

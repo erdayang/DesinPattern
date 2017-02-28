@@ -43,12 +43,14 @@ public class Connection {
         System.out.println("connection read...");
 
         count = ChannelUtils.channelRead(channel, headerBuffer);
+        System.out.println("count = "+ count);
         if(count < 0 || headerBuffer.hasRemaining()){
             return count;
         }
-        int length = headerBuffer.getInt();
-
         headerBuffer.flip();
+        int length = headerBuffer.getInt();
+        System.out.println();
+
         dataBuffer = ByteBuffer.allocate(length);
 
         count = ChannelUtils.channelRead(channel, dataBuffer);
