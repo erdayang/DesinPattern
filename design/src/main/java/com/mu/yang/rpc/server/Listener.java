@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * 监听客户端的连接
  * Created by yangxianda on 2017/2/28.
  */
 public class Listener extends Thread{

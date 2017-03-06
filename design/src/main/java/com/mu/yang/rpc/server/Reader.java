@@ -9,6 +9,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
+ * 读数据,解码
  * Created by yangxianda on 2017/2/28.
  */
 public class Reader extends Thread{
@@ -69,8 +70,6 @@ public class Reader extends Thread{
             return;
         }
         connection.readAndProcess();
-
-
     }
 
     public void run(){
