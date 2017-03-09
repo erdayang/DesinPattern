@@ -31,6 +31,7 @@ public class GoodServer {
         GoodServer goodServer = new GoodServer("127.0.0.1", 8080);
     }
     public GoodServer(String ip, int port) throws IOException {
+
         initHandler();
         listener = new Listener(ip, port);
         listener.start();
@@ -43,9 +44,5 @@ public class GoodServer {
             handlers[i].start();
         }
     }
-
-
-
-
 
 }

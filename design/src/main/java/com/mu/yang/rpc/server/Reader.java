@@ -1,5 +1,7 @@
 package com.mu.yang.rpc.server;
 
+import com.mu.yang.rpc.entity.Request;
+
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
@@ -69,7 +71,10 @@ public class Reader extends Thread{
             System.out.println("connection is null");
             return;
         }
-        connection.readAndProcess();
+        Request request = connection.readAndProcess();
+        Call call = new Call();
+        call.setRequest(request);
+        call.setConnection(connection);
     }
 
     public void run(){

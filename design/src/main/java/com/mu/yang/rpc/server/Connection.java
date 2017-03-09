@@ -38,14 +38,14 @@ public class Connection {
         System.out.println("create new Connection");
     }
 
-    public int readAndProcess() throws IOException {
+    public Request readAndProcess() throws IOException {
         int count = -1;
         System.out.println("connection read...");
 
         count = ChannelUtils.channelRead(channel, headerBuffer);
         System.out.println("count = "+ count);
         if(count < 0 || headerBuffer.hasRemaining()){
-            return count;
+            return null;
         }
         headerBuffer.flip();
         int length = headerBuffer.getInt();
@@ -57,7 +57,7 @@ public class Connection {
         Request request = JSON.parseObject(dataBuffer.array(), Request.class);
         System.out.println("get Request: " + JSON.toJSONString(request));
 
-        return count;
+        return request;
     }
 
 

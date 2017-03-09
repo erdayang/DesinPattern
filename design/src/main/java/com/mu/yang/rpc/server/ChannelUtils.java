@@ -24,6 +24,10 @@ public class ChannelUtils {
         return count;
     }
 
+    public static int channelWrite(WritableByteChannel channel, ByteBuffer buffer) throws IOException {
+        return buffer.remaining() <= NIO_BUFFER_LIMIT ? channel.write(buffer) : channelIO(null, channel, buffer);
+    }
+
     public static int channelIO(ReadableByteChannel readCh,
                                  WritableByteChannel writeCh,
                                  ByteBuffer buf) throws IOException {

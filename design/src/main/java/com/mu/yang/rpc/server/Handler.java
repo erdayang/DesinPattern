@@ -4,6 +4,7 @@ import com.mu.yang.rpc.entity.Request;
 import com.mu.yang.rpc.entity.Response;
 import com.mu.yang.rpc.entity.ResultCode;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.BlockingQueue;
@@ -17,9 +18,11 @@ public class Handler extends Thread {
     private BlockingQueue<Call> requestQueue;
     private BlockingQueue<Call> responseQueue;
     private Writer writer;
-    public Handler(BlockingQueue<Call> requestQueue, BlockingQueue<Call> responseQueue){
+    public Handler(BlockingQueue<Call> requestQueue, BlockingQueue<Call> responseQueue) throws IOException {
         this.requestQueue = requestQueue;
         this.responseQueue = responseQueue;
+        writer = new Writer("", responseQueue );
+        writer.start();
     }
 
     public void run(){
