@@ -8,6 +8,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -21,8 +22,10 @@ public class Listener extends Thread{
     private volatile AtomicInteger READER_INDEX = new AtomicInteger(0);
     private Reader[] readers = null;
     private int READER_COUNT = 3;
-    public Listener(String ip, int port) throws IOException {
+    private BlockingQueue<Call> requestQueue;
+    public Listener(String ip, int port, BlockingQueue<Call> requestQueue) throws IOException {
         super("Thread-listener");
+        this.requestQueue = requestQueue;
         address = new InetSocketAddress(ip, port);
         acceptChannel = ServerSocketChannel.open();
         acceptChannel.configureBlocking(false);
@@ -33,7 +36,7 @@ public class Listener extends Thread{
         acceptChannel.register(selecor, SelectionKey.OP_ACCEPT);
         readers = new Reader[READER_COUNT];
         for(int i = 0; i < READER_COUNT; i++){
-            readers[i] = new Reader("ReaderThread-"+ i);
+            readers[i] = new Reader("ReaderThread-"+ i, requestQueue );
             readers[i].start();
         }
 

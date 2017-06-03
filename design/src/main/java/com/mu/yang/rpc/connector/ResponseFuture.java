@@ -32,6 +32,7 @@ public class ResponseFuture {
             this.wait(timeout);
         } catch (InterruptedException e) {
             e.printStackTrace();
+            return null;
         }
         return process(response);
     }

@@ -1,5 +1,7 @@
 package com.mu.yang.rpc.server;
 
+import com.mu.yang.rpc.entity.Request;
+
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
@@ -15,8 +17,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Reader extends Thread{
     private  final Selector readSelector;
     private BlockingQueue<Connection> connections;
-    public Reader(String name) throws IOException {
+    private BlockingQueue<Call> requestQueue;
+    public Reader(String name, BlockingQueue<Call> requestQueue) throws IOException {
         super(name);
+        this.requestQueue = requestQueue;
         readSelector = Selector.open();
         connections = new LinkedBlockingQueue<Connection>();
     }
@@ -38,23 +42,21 @@ public class Reader extends Thread{
                     System.out.println(this.getName()+ ": register read selector..." + connections.size());
                 }
                 readSelector.select();
-                System.out.println("after select");
 
                 Iterator<SelectionKey> iterator = readSelector.selectedKeys().iterator();
                 while(iterator.hasNext()) {
                     key = iterator.next();
                     iterator.remove();
-                    System.out.println("befor read");
                     if(key.isReadable()){
-                        System.out.println("before read");
                         doRead(key);
                     }
-                    key = null;
                 }
             } catch (ClosedChannelException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+                if(null != key)
+                    key.cancel();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -63,13 +65,20 @@ public class Reader extends Thread{
     }
 
     public void doRead(SelectionKey key) throws IOException {
-        System.out.println( this.getName() + "doReader");
         Connection connection = (Connection)key.attachment();
         if(connection == null){
             System.out.println("connection is null");
             return;
         }
-        connection.readAndProcess();
+        Request request = connection.readAndProcess();
+        Call call = new Call();
+        call.setConnection(connection);
+        call.setRequest(request);
+        try {
+            requestQueue.put(call);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void run(){

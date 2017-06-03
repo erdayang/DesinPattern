@@ -35,8 +35,6 @@ public class DefaultConnectorFactory extends ConnectorFactory {
             System.out.println("get connector from list");
             return connectors.get(ROUNDROBIN.getAndIncrement() % MAX_CONNECTOR);
         }
-        Connector connector = createConnector();
-
-        return connector;
+        return  createConnector();
     }
 }

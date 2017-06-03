@@ -51,4 +51,8 @@ public class ChannelUtils {
         int nBytes = initialRemaining - buf.remaining();
         return (nBytes > 0) ? nBytes : ret;
     }
+
+    public static int channelWrite(WritableByteChannel channel, ByteBuffer buffer) throws IOException {
+        return buffer.remaining() <= NIO_BUFFER_LIMIT ? channel.write(buffer) : channelIO(null, channel, buffer);
+    }
 }

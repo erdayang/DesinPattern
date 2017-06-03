@@ -1,5 +1,7 @@
 package com.mu.yang.rpc.server;
 
+import com.mu.yang.proxy.HelloWorld;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -23,7 +25,7 @@ public class GoodServer {
     // 收到消息之后的队列，给予 handler处理
     private BlockingQueue requestQueue = new LinkedBlockingQueue();
     // 消息处理后的队列，用于返回
-    private BlockingQueue responseQueue = new LinkedBlockingQueue();
+ //   private BlockingQueue responseQueue = new LinkedBlockingQueue();
 
     private Handler[] handlers;
     private int HANDLER_COUNT = 10;
@@ -31,15 +33,16 @@ public class GoodServer {
         GoodServer goodServer = new GoodServer("127.0.0.1", 8080);
     }
     public GoodServer(String ip, int port) throws IOException {
+        InstanceMap.addClass(HelloWorld.class);
         initHandler();
-        listener = new Listener(ip, port);
+        listener = new Listener(ip, port, requestQueue);
         listener.start();
     }
 
     public void initHandler(){
         handlers = new Handler[HANDLER_COUNT];
         for(int i = 0; i < HANDLER_COUNT; i++){
-            handlers[i] = new Handler(requestQueue, responseQueue);
+            handlers[i] = new Handler("HandlerThread-"+i, requestQueue);
             handlers[i].start();
         }
     }

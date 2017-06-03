@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by yangxianda on 2016/12/18.
  */
 public class SimpleConnector implements Connector, Runnable {
-    private InputStream inputStream;
+    private DataInputStream inputStream;
     private OutputStream outputStream;
     private final long id;
     Map<String, ResponseFuture> futureMap = new ConcurrentHashMap<String, ResponseFuture>();
@@ -24,7 +24,7 @@ public class SimpleConnector implements Connector, Runnable {
         this.id = id;
         System.out.println("new Connector id: "+ id);
         try {
-            this.inputStream = socket.getInputStream();
+            this.inputStream = new DataInputStream(socket.getInputStream());
             this.outputStream = socket.getOutputStream();
         } catch (IOException e) {
             e.printStackTrace();
@@ -40,13 +40,12 @@ public class SimpleConnector implements Connector, Runnable {
 
     public ResponseFuture send(Request request) {
 
-        System.out.println("send request: " + request);
-
         try {
             int length = request.toString().getBytes().length;
             ByteBuffer bytes = ByteBuffer.allocate(4 + length);
             bytes.putInt(length);
             bytes.put(request.toString().getBytes());
+            System.out.println("send "+ new String(bytes.array()));
             outputStream.write(bytes.array());
             outputStream.flush();
         } catch (IOException e) {
@@ -78,9 +77,9 @@ public class SimpleConnector implements Connector, Runnable {
     public void run() {
         try {
             for(;;) {
-                byte[] result = new byte[4096];
-                int size = 0;
-                    size = inputStream.read(result);
+                int length = inputStream.readInt();
+                byte[] result = new byte[length];
+                inputStream.readFully(result);
                 String responseString = new String(result);
                 System.out.println("receive response: " + responseString);
                 Response response = JSON.parseObject(responseString, Response.class);
